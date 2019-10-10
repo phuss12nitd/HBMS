@@ -1,0 +1,152 @@
+package com.xyz.hbms.ui;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Scanner;
+
+import com.xyz.hbms.model.Hotel;
+import com.xyz.hbms.model.User;
+import com.xyz.hbms.service.HotelImplementation;
+import com.xyz.hbms.service.UserImplementation;
+
+public class MainUi {
+
+	public static void main(String[] args) throws SQLException {
+
+		UserImplementation userImpl = new UserImplementation();
+		HotelImplementation hotelImpl = new HotelImplementation();
+		List hotelList = new ArrayList<Hotel>();
+		Scanner sc = new Scanner(System.in);
+
+		System.out.println("**********************Welcome to Hotel Booking Management System**********************");
+		System.out.println(
+				"-----------------------------------------------------------------------------------------------------------------");
+		int choice = 0;
+		int flag = 1;
+		while (flag != 0) {
+			System.out.println("1. Login Page");
+			System.out.println("2. Register");
+			choice = sc.nextInt();
+			if (choice == 1 || choice == 2) {
+				flag = 0;
+
+			} else {
+				System.out.println("Wrong Input.\nTry again with another Input.\n");
+			}
+		}
+		switch (choice) {
+		case 1:
+			flag = 1;
+			int selection = 0;
+			String username = null, password = null;
+			while (flag != 0) {
+				System.out.println("1. Admin");
+				System.out.println("2. Customer ");
+				System.out.println("3. Hotel Employee ");
+				selection = sc.nextInt();
+				if (selection >= 1 || selection <= 3) {
+					int check=1;
+					while(check!=0)
+					{
+					System.out.println("Enter username");
+					username = sc.next().toUpperCase();
+					System.out.println("Enter password");
+					password = sc.next().toUpperCase();
+					flag = 0;
+					
+					String userRole = userImpl.checkRole(username, password);
+					if (userRole != null)
+					{
+						System.out.println("Welcome " + userRole.toLowerCase());
+					check=0;
+					}
+					else
+						System.out.println("Wrong Username and Password.\nPlease check with your credentials\nLet's try it again\n\n");
+				}
+				}
+					else {
+					System.out.println("Please enter a valid input\n");
+				}
+				
+			}
+
+			
+			if(selection == 1)
+			{
+				/*
+				 * 
+				 *  admin functionalities
+				 * 
+				 * 
+				 */
+			}
+			
+			else if(selection == 2 || selection ==3)
+			{
+				System.out.println("Search Hotels by: ");
+				System.out.println("1. Price");
+				System.out.println("2. Location");
+				int ch = sc.nextInt();
+				if(ch == 1) {
+					System.out.println("Min Price:");
+					int min = sc.nextInt();
+					System.out.println("Max Price:");
+					int max = sc.nextInt();
+					hotelList = hotelImpl.searchByPrice(min, max);
+				}
+				else if(ch==2) {
+					System.out.println("Enter the location(city): ");
+					String city = sc.next();
+					hotelList = hotelImpl.searchByLocation(city);
+					System.out.println(hotelList);
+				}
+				Iterator itr = hotelList.iterator();
+				while(itr.hasNext())
+				{
+					System.out.println(itr.next());
+					
+				}
+				String choice1;
+				System.out.println("Enter Hotel ID which you wish to book: ");
+				choice1=sc.next();
+				/*
+				 * 
+				 * 
+				 *customer and employe functionality
+				 * 
+				 * 
+				 */
+			}
+
+			break;
+		case 2:
+			User user = new User();
+			System.out.println("Enter User Id:");
+			// check if user_id is unique or not
+			user.setUserId(sc.next());
+			System.out.println("Enter Password");
+			user.setUserPassword(sc.next());
+			System.out.println("Enter User Role. (Customer/Employee)");
+			user.setUserRole(sc.next());
+			System.out.println("Enter UserName");
+			// check if username is unique or not
+			user.setUserName(sc.next());
+			System.out.println("Enter Mobile Numnber");
+			user.setMobileNo(sc.next());
+			System.out.println("Enter Phone");
+			user.setPhone(sc.next());
+			System.out.println("Enter Address");
+			user.setAddress(sc.next());
+			System.out.println("Enter Email");
+			user.setEmail(sc.next());
+			boolean result = userImpl.registerUser(user);
+			if (result)
+				System.out.println(user.getUserRole().toLowerCase() + " added.");
+
+		}
+
+	}
+
+}

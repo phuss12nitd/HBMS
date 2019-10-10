@@ -1,0 +1,12 @@
+package com.xyz.hbms.service;
+
+import java.sql.SQLException;
+import java.util.List;
+
+public interface HotelInterface {
+	
+	public List listAllHotels() throws SQLException;
+	public void bookRoom();
+	public List searchByPrice(int min, int max);
+
+}

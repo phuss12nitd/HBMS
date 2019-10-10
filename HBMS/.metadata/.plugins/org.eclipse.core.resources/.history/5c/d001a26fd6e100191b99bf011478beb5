@@ -1,0 +1,13 @@
+package com.xyz.hbms.dao;
+
+import java.sql.SQLException;
+import java.util.List;
+
+public interface HotelDao {
+	
+	public List showAll() throws SQLException;
+	public void updateRoom();
+	public List searchByPrice(int min, int max);
+	public List searchByLocation(String city);
+
+}

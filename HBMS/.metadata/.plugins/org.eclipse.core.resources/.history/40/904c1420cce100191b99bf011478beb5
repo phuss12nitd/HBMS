@@ -1,0 +1,228 @@
+package com.xyz.hbms.ui;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Scanner;
+
+import com.xyz.hbms.model.Hotel;
+import com.xyz.hbms.model.User;
+import com.xyz.hbms.service.HotelImplementation;
+import com.xyz.hbms.service.UserImplementation;
+
+public class MainUi {
+
+	public static void main(String[] args) throws SQLException {
+
+		UserImplementation userImpl = new UserImplementation();
+		HotelImplementation hotelImpl = new HotelImplementation();
+		List<Hotel> hotelList = new ArrayList<Hotel>();
+		Scanner sc = new Scanner(System.in);
+
+		System.out.println("**********************Welcome to Hotel Booking Management System**********************");
+		System.out.println(
+				"-----------------------------------------------------------------------------------------------------------------");
+		int choice = 0;
+		int flag = 1;
+		while (flag != 0) {
+			System.out.println("1. Login Page");
+			System.out.println("2. Register");
+			choice = sc.nextInt();
+			if (choice == 1 || choice == 2) {
+				flag = 0;
+
+			} else {
+				System.out.println("\"OOPS!!!!\\nWrong Input. Please try again.");
+			}
+		}
+		switch (choice) {
+		case 1:
+			flag = 1;
+			int selection = 0;
+			String username = null, password = null;
+			while (flag != 0) {
+				System.out.println("1. Admin");
+				System.out.println("2. Customer ");
+				System.out.println("3. Hotel Employee ");
+				selection = sc.nextInt();
+				if (selection >= 1 || selection <= 3) {
+					int check=1;
+					while(check!=0)
+					{
+					System.out.println("Enter username");
+					username = sc.next().toUpperCase();
+					System.out.println("Enter password");
+					password = sc.next().toUpperCase();
+					flag = 0;
+					
+					String userRole = userImpl.checkRole(username, password);
+					if (userRole != null)
+					{
+						System.out.println("Welcome " + userRole.toLowerCase());
+					check=0;
+					}
+					else
+						System.out.println("Wrong Username and Password.\nPlease check with your credentials\nLet's try it again\n\n");
+				}
+				}
+					else {
+					System.out.println("\"OOPS!!!!\\nWrong Input. Please try again.");
+				}
+				
+			}
+
+			
+			if(selection == 1)
+			{
+				/*
+				 * 
+				 *  admin functionalities
+				 * 
+				 * 
+				 */
+				int admin_choice = 1;
+				while(admin_choice >0 && admin_choice <=3)
+				{	System.out.println("1. Hotel Management");
+					System.out.println("2. Room Management");
+					System.out.println("3. Generate Reports");
+					admin_choice = sc.nextInt();
+					
+					switch(admin_choice)
+					{
+					case 1:
+						/*
+						 * 
+						 * hotel management functionalities
+						 * 
+						 */
+						break;
+					case 2: 
+						/*
+						 * 
+						 * 
+						 * 
+						 * room management functionalities
+						 * 
+						 * 
+						 */
+						break;
+					case 3:
+						/*
+						 * 
+						 * 
+						 * reports functionalities
+						 * 
+						 * 
+						 * 
+						 */
+						break;
+					default:
+						System.out.println("\"OOPS!!!!\\nWrong Input. Please try again.");
+					}
+				}
+				
+			}
+			
+			else if(selection == 2 || selection ==3)
+			{
+				int user_choice = 0;
+				
+				while(user_choice == 0) {
+					System.out.println("1. Search for Hotel Rooms");
+					System.out.println("2. Book Hotel Rooms");
+					System.out.println("3. View Booking Status");
+					user_choice = sc.nextInt();
+				
+					
+					switch(user_choice)
+					{
+					case 1:
+						/*
+						 *   search for hotel rooms
+						 */
+						System.out.println("Choose the criteria of search:-");
+						System.out.println("1. Price");
+						System.out.println("2. Location");
+						int ch = sc.nextInt();
+						if(ch == 1) {
+							System.out.println("Set your lower price Range");
+							int min = sc.nextInt();
+							System.out.println("Set your higher price Range");
+							int max = sc.nextInt();
+							hotelList = hotelImpl.searchByPrice(min, max);
+						}
+						else if(ch==2) {
+							System.out.println("Enter the location(city): ");
+							String city = sc.next();
+							hotelList = hotelImpl.searchByLocation(city);
+							System.out.println(hotelList);
+						}
+						for(Hotel hotel : hotelList)
+						{
+							System.out.println("Hotel Id: "+ hotel.getHotelId()+ "|| Hotel Name: "+ hotel.getHotelName() + 
+									"|| City: " + hotel.getCity() +"\n");
+							
+						}
+						
+						break;
+					case 2:
+						/*
+						 * 
+						 * 
+						 * 	book hotel rooms
+						 * 
+						 * 
+						 * 
+						 */
+						break;
+					case 3:
+						/*
+						 * 
+						 * 
+						 * 
+						 * view booking status
+						 * 
+						 * 
+						 * 
+						 * 
+						 * 
+						 */
+					default:	
+						System.out.println("OOPS!!!!\nWrong Input. Please try again.");
+						user_choice =0;
+					}
+				}	
+							
+			}
+
+			break;
+		case 2:
+			User user = new User();
+			System.out.println("Enter User Id:");
+			// check if user_id is unique or not
+			user.setUserId(sc.next());
+			System.out.println("Enter Password");
+			user.setUserPassword(sc.next());
+			System.out.println("Enter User Role. (Customer/Employee)");
+			user.setUserRole(sc.next());
+			System.out.println("Enter UserName");
+			// check if username is unique or not
+			user.setUserName(sc.next());
+			System.out.println("Enter Mobile Numnber");
+			user.setMobileNo(sc.next());
+			System.out.println("Enter Phone");
+			user.setPhone(sc.next());
+			System.out.println("Enter Address");
+			user.setAddress(sc.next());
+			System.out.println("Enter Email");
+			user.setEmail(sc.next());
+			boolean result = userImpl.registerUser(user);
+			if (result)
+				System.out.println(user.getUserRole().toLowerCase() + " added.");
+
+		}
+
+	}
+
+}

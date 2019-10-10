@@ -1,0 +1,16 @@
+package com.xyz.hbms.service;
+
+import java.sql.SQLException;
+import java.util.List;
+
+import com.xyz.hbms.model.Hotel;
+
+public interface HotelInterface {
+	
+	public List listAllHotels() throws SQLException;
+	public void bookRoom();
+	public List searchByPrice(int min, int max);
+	public List searchByLocation(String city);
+	public boolean addHotel(Hotel hotel) throws SQLException;
+	public boolean removeHotel(String id);
+}

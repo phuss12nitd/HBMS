@@ -1,0 +1,16 @@
+package com.xyz.hbms.dao;
+
+import java.sql.SQLException;
+import java.util.List;
+
+import com.xyz.hbms.model.Hotel;
+
+public interface HotelDao {
+	
+	public List showAll() throws SQLException;
+	public void updateRoom();
+	public List searchByPrice(int min, int max);
+	public List searchByLocation(String city);
+	public boolean addHotel(Hotel hotel) throws SQLException;
+	public boolean deleteHotel(String id);
+}
