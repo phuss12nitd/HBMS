@@ -14,4 +14,5 @@ public interface HotelInterface {
 	public boolean addHotel(Hotel hotel) throws SQLException;
 	public boolean removeHotel(String id) throws SQLException;
 	public boolean changeHotelDescription(String hotelId, String hotelDescription); 
+	public boolean includeSpecialOffers(String hotelId, double percentageDiscount);
 }

@@ -1,14 +1,14 @@
 package com.xyz.hbms.model;
 
-import java.util.Date;
+
 
 public class BookingDetails {
 
 	private String bookingId;
 	private String roomId;
 	private String userId;
-	private Date bookedFrom;
-	private Date bookedTo;
+	private String bookedFrom;
+	private String bookedTo;
 	private int numberOfAdults;
 	private int numberOfChildren;
 	private double amount;
@@ -16,7 +16,7 @@ public class BookingDetails {
 	public BookingDetails() {
 	}
 
-	public BookingDetails(String bookingId, String roomId, String userId, Date bookedFrom, Date bookedTo,
+	public BookingDetails(String bookingId, String roomId, String userId, String bookedFrom, String bookedTo,
 			int numberOfAdults, int numberOfChildren, double amount) {
 		super();
 		this.bookingId = bookingId;
@@ -53,19 +53,19 @@ public class BookingDetails {
 		this.userId = userId;
 	}
 
-	public Date getBookedFrom() {
+	public String getBookedFrom() {
 		return bookedFrom;
 	}
 
-	public void setBookedFrom(Date bookedFrom) {
+	public void setBookedFrom(String bookedFrom) {
 		this.bookedFrom = bookedFrom;
 	}
 
-	public Date getBookedTo() {
+	public String getBookedTo() {
 		return bookedTo;
 	}
 
-	public void setBookedTo(Date bookedTo) {
+	public void setBookedTo(String bookedTo) {
 		this.bookedTo = bookedTo;
 	}
 

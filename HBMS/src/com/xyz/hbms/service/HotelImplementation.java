@@ -46,4 +46,12 @@ public class HotelImplementation implements HotelInterface {
 		return hotelImpl.updateHotelDescription(hotelId, hotelDescription);
 	}
 
+	@Override
+	public boolean includeSpecialOffers(String hotelId, double percentageDiscount) {
+		return hotelImpl.updateSpecialOffers(hotelId, percentageDiscount);
+		
+	}
+	
+	
+
 }

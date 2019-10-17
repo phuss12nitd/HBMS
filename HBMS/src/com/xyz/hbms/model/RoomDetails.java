@@ -6,7 +6,7 @@ public class RoomDetails {
 	private String roomNo;
 	private String roomType;
 	private double perNight;
-	private boolean availability;
+	private int availability;
 
 	public String getHotelId() {
 		return hotelId;
@@ -48,16 +48,16 @@ public class RoomDetails {
 		this.perNight = perNight;
 	}
 
-	public boolean getAvailability() {
+	public int getAvailability() {
 		return availability;
 	}
 
-	public void setAvailability(boolean availability) {
-		this.availability = availability;
+	public void setAvailability(int i) {
+		this.availability = i;
 	}
 
 	public RoomDetails(String hotelId, String roomId, String roomNo, String roomType, double perNight,
-			boolean availability) {
+			int availability) {
 		super();
 		this.hotelId = hotelId;
 		this.roomId = roomId;

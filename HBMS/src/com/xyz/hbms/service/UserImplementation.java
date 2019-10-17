@@ -22,4 +22,10 @@ public class UserImplementation implements UserInterface{
 		return userDao.getRole(username, password);
 	}
 
+
+	@Override
+	public String getUserId(String username, String password) throws SQLException {
+		return userDao.getUserId(username, password);
+	}
+
 }

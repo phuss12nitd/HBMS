@@ -1,28 +1,42 @@
 package com.xyz.hbms.ui;
 
+import java.util.Date;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 
+import org.omg.Messaging.SyncScopeHelper;
+
+import com.xyz.hbms.model.BookingDetails;
 import com.xyz.hbms.model.Hotel;
 import com.xyz.hbms.model.RoomDetails;
 import com.xyz.hbms.model.User;
+import com.xyz.hbms.service.BookingImplementation;
+import com.xyz.hbms.service.BookingInterface;
 import com.xyz.hbms.service.HotelImplementation;
+import com.xyz.hbms.service.HotelInterface;
 import com.xyz.hbms.service.RoomImplementation;
+import com.xyz.hbms.service.RoomInterface;
 import com.xyz.hbms.service.UserImplementation;
+import com.xyz.hbms.service.UserInterface;
 
 public class MainUi {
 
-	public static int manipulativeId = 103;
+	public static int manipulativeId = 199;
+
 	public static void main(String[] args) throws SQLException {
 
-		UserImplementation userImpl = new UserImplementation();
-		HotelImplementation hotelImpl = new HotelImplementation();
+		UserInterface userImpl = new UserImplementation();
+		HotelInterface hotelImpl = new HotelImplementation();
+		RoomInterface roomImplementation = new RoomImplementation();
+		BookingInterface bookingImpl = new BookingImplementation();
 		List<Hotel> hotelList = new ArrayList<Hotel>();
 		Scanner sc = new Scanner(System.in);
+		Scanner sc1 = new Scanner(System.in);
 		System.out.println("**********************Welcome to Hotel Booking Management System**********************");
 		System.out.println(
 				"-----------------------------------------------------------------------------------------------------------------");
@@ -44,6 +58,7 @@ public class MainUi {
 			flag = 1;
 			int selection = 0;
 			String username = null, password = null;
+			String userId = null;
 			while (flag != 0) {
 				System.out.println("1. Admin");
 				System.out.println("2. Customer ");
@@ -59,6 +74,7 @@ public class MainUi {
 						flag = 0;
 
 						String userRole = userImpl.checkRole(username, password);
+						userId = userImpl.getUserId(username, password);
 						if (userRole != null) {
 							System.out.println("Welcome " + userRole.toLowerCase());
 							check = 0;
@@ -96,10 +112,9 @@ public class MainUi {
 						System.out.println("1. Register hotel");
 						System.out.println("2. Remove hotel");
 						System.out.println("3. Modify hotel");
-						
+
 						int ch = sc.nextInt();
-						switch(ch)
-						{
+						switch (ch) {
 						case 1:
 							Hotel newHotel = new Hotel();
 							String hotelId = "H" + manipulativeId;
@@ -108,11 +123,12 @@ public class MainUi {
 							System.out.println("Enter City:");
 							newHotel.setCity(sc.next());
 							System.out.println("Enter Hotel Name:");
-							newHotel.setHotelName(sc.next());
+							newHotel.setHotelName(sc1.nextLine());
 							System.out.println("Enter Address:");
-							newHotel.setAddress(sc.next());
+							Scanner sc2 = new Scanner(System.in);
+							newHotel.setAddress(sc2.nextLine());
 							System.out.println("Enter Description:");
-							newHotel.setDescription(sc.next());
+							newHotel.setDescription(sc1.nextLine());
 							System.out.println("Enter Avg Rate per night:");
 							newHotel.setAvgRatePerNight(sc.nextDouble());
 							System.out.println("Enter Phone No. 1");
@@ -125,41 +141,61 @@ public class MainUi {
 							newHotel.setEmail(sc.next());
 							System.out.println("Enter fax:");
 							newHotel.setFax(sc.next());
-							
+
 							boolean response = hotelImpl.addHotel(newHotel);
-							if(response)
+							if (response)
 								System.out.println("Hotel Registered Succesfully : " + hotelId);
 							else
 								System.out.println("Problem with the registration.");
 							break;
 						case 2:
-							
+
 							System.out.println("Enter Hotel Id to remove it:");
 							hotelId = sc.next();
 							response = hotelImpl.removeHotel(hotelId);
-							if(response)
+							if (response)
 								System.out.println("Hotel Removed Succesfully : " + hotelId);
 							else
 								System.out.println("Problem with the removal operation.");
-					
+
 							break;
 						case 3:
-							System.out.println("Enter the Hotel Id of the hotel you want to update the description of: ");
-							hotelId= sc.next();
-							System.out.println("Enter the updated description");
-							String hotelDescription= sc.next();
-							boolean result = hotelImpl.changeHotelDescription(hotelId, hotelDescription);
-							if(result)
-							{
-								System.out.println("Hotel description updated successfully with ID: "+hotelId);
+							System.out.println("1. Update Hotel description:");
+							System.out.println("2. Include special offers:");
+							int choice2 = sc.nextInt();
+							switch (choice2) {
+							case 1:
+								System.out.println(
+										"Enter the Hotel Id of the hotel you want to update the description of: ");
+								hotelId = sc.next();
+								System.out.println("Enter the updated description");
+								String hotelDescription = sc1.nextLine();
+								boolean result = hotelImpl.changeHotelDescription(hotelId, hotelDescription);
+								if (result) {
+									System.out.println("Hotel description updated successfully with ID: " + hotelId);
+								} else {
+									System.out.println("Problem with the updation operation");
+								}
+								break;
+							case 2:
+								System.out.println(
+										"Enter the Hotel Id of the hotel you want to include the special offers: ");
+								hotelId = sc.next();
+								System.out.println("Enter the percentage discount: ");
+								double percentageDiscount = sc.nextDouble();
+								boolean truth = hotelImpl.includeSpecialOffers(hotelId, percentageDiscount);
+								if (truth) {
+									System.err.println("special offers included with hotel Id: " + hotelId);
+								} else {
+									System.out.println("There was a problem with the operation");
+								}
+								break;
+							default:
+								System.out.println("\"OOPS!!!!\\nWrong Input. Please try again.");
 							}
-							else
-							{
-								System.out.println("Problem with the updation operation");
-							}
-							break;
+
 						}
-						
+
 						break;
 					case 2:
 						/*
@@ -170,124 +206,174 @@ public class MainUi {
 						 * 
 						 * 
 						 */
-						
+
 						System.out.println("1. Register room");
 						System.out.println("2. Remove room");
 						System.out.println("3. Modify room rate per night");
-						RoomImplementation roomImplementation= new RoomImplementation();
-						int room_choice= sc.nextInt();
-						switch(room_choice)
-						{
-						case 1:
-							{
-								
-								RoomDetails roomDetails= new RoomDetails();
-								System.out.println("Enter the hotel Id: ");
-								roomDetails.setHotelId(sc.next());
-								System.out.println("Enter the room Id: ");
-								roomDetails.setRoomId(sc.next());
-								System.out.println("Enter the room number");
-								roomDetails.setRoomNo(sc.next());
-								System.out.println("Enter the room type");
-								roomDetails.setRoomType(sc.next());
-								System.out.println("Enter the room per night: ");
-								roomDetails.setPerNight(sc.nextDouble());
-								System.out.println("Enter the availablity: ");
-								roomDetails.setAvailability(sc.nextBoolean());
-								boolean result = roomImplementation.insertRoomDetails(roomDetails);
-								if(result)
-								{
-									System.out.println("Room added successfully with room Id: "+roomDetails.getRoomId());
-								}
-								else
-								{
-									System.out.println("There was a problem with the registration");
-								}
-								break;
+						System.out.println("4. Update Room Availability");
+						int room_choice = sc.nextInt();
+						switch (room_choice) {
+						case 1: {
+
+							RoomDetails roomDetails = new RoomDetails();
+							System.out.println("Enter the hotel Id: ");
+							roomDetails.setHotelId(sc.next());
+							System.out.println("Enter the room Id: ");
+							roomDetails.setRoomId(sc.next());
+							System.out.println("Enter the room number");
+							roomDetails.setRoomNo(sc.next());
+							System.out.println("Enter the room type");
+							roomDetails.setRoomType(sc1.nextLine());
+							System.out.println("Enter the room per night: ");
+							roomDetails.setPerNight(sc.nextDouble());
+							System.out.println("Enter the availablity: ");
+							roomDetails.setAvailability(sc.nextInt());
+
+							boolean result = roomImplementation.insertRoomDetails(roomDetails);
+							if (result) {
+								System.out.println("Room added successfully with room Id: " + roomDetails.getRoomId());
+							} else {
+								System.out.println("There was a problem with the registration");
 							}
-						case 2:
-							{
-								System.out.println("Enter the room Id to remove: ");
-								String roomId= sc.next();
-								boolean result = roomImplementation.removeRoomDetails(roomId);
-								if(result)
-								{
-									System.out.println("The room was deleted with Id :"+roomId);
-								}
-								else
-								{
-									System.out.println("There was a problem with the delete operation");
-								}
-								
-								break;
+							break;
+						}
+						case 2: {
+							System.out.println("Enter the room Id to remove: ");
+							String roomId = sc.next();
+							boolean result = roomImplementation.removeRoomDetails(roomId);
+							if (result) {
+								System.out.println("The room was deleted with Id :" + roomId);
+							} else {
+								System.out.println("There was a problem with the delete operation");
 							}
-						case 3:
-							{
-								System.out.println("Enter the room Id for which you want to update the per night rate: ");
-								String roomId= sc.next();
-								System.out.println("Enter the discount percentage");
-								double roomDiscountPercentage= sc.nextDouble();
-								boolean result = roomImplementation.updateRoomPerNight(roomId, roomDiscountPercentage);
-								if(result)
-								{
-									System.out.println("The per night rate was updated with room id: "+roomId);
-								}
-								else
-								{
-									System.out.println("There was a problem with the updation process");
-								}
-								break;
+
+							break;
+						}
+						case 3: {
+							System.out.println("Enter the room Id for which you want to update the per night rate: ");
+							String roomId = sc.next();
+							System.out.println("Enter the discount percentage");
+							double roomDiscountPercentage = sc.nextDouble();
+							boolean result = roomImplementation.updateRoomPerNight(roomId, roomDiscountPercentage);
+							if (result) {
+								System.out.println("The per night rate was updated with room id: " + roomId);
+							} else {
+								System.out.println("There was a problem with the updation process");
 							}
-						default:
-							{
+							break;
+						}
+						case 4: {
+							int result = 0;
+							String final_avail = null;
+							System.out.println("Enter the room Id to make it available: ");
+							String roomId = sc.next();
+							RoomDetails roomdetails = roomImplementation.findRoomById(roomId);
+							if (roomdetails.getAvailability() == 1)
+								System.out.println("The room is already available");
+							else
+								result = roomImplementation.updateAvailability(roomId, roomdetails.getAvailability());
+							if (roomdetails.getAvailability() == 1)
+								final_avail = "Not available";
+							else
+								final_avail = "Available";
+							if (result == 1)
+								System.out.println("Room availability of Room Id:" + roomId + " : " + final_avail);
+							/*
+							 * 
+							 * 
+							 * update room availability from N to Y.
+							 * 
+							 * 
+							 * 
+							 */
+						}
+							break;
+						default: {
 							System.out.println("\"OOPS!!!!\\nWrong Input. Please try again.");
-							}
+						}
 						}
 						break;
 					case 3:
-						
-							System.out.println("1. View List of Hotels");
-							System.out.println("2. View Bookings of specific hotel");
-							System.out.println("3. View guest list of specific hotel");
-							System.out.println("4. View bookings for specified date");
-							int report_choice = sc.nextInt();
-							
-							switch(report_choice)
-							{
-							case 1:
-								 hotelList = hotelImpl.listAllHotels();
-								 for(Hotel hotel : hotelList)
-								 {		 System.out.println("Hotel Id: " + hotel.getHotelId() + " || Hotel Name: "
-												+ hotel.getHotelName() + " || City: " + hotel.getCity() + " || Price: "
-												+ hotel.getAvgRatePerNight() + "\n");
-								 }
-								 break;
-							case 2:
-								/*
-								 * 
-								 * bookings of specific hotel(by hotelId)
-								 * 
-								 */
-								 break;
-							case 3:
-								/*
-								 * 
-								 * view guest list of specific hotel. (by hotelId)
-								 * 
-								 * 
-								 */
-								 break;
-							case 4:
-								/*
-								 * 
-								 * bookings for specified date.
-								 * 
-								 * 
-								 */
-								 break;
-								
-							
+
+						System.out.println("1. View List of Hotels");
+						System.out.println("2. View Bookings of specific hotel");
+						System.out.println("3. View guest list of specific hotel");
+						System.out.println("4. View bookings for specified date");
+						int report_choice = sc.nextInt();
+
+						switch (report_choice) {
+						case 1:
+							hotelList = hotelImpl.listAllHotels();
+							for (Hotel hotel : hotelList) {
+								System.out.println("Hotel Id: " + hotel.getHotelId() + " || Hotel Name: "
+										+ hotel.getHotelName() + " || City: " + hotel.getCity() + " || Price: "
+										+ hotel.getAvgRatePerNight() + "\n");
 							}
+							break;
+						case 2:
+							/*
+							 * 
+							 * bookings of specific hotel(by hotelId)
+							 * 
+							 */
+							System.out.println("Enter the Hotel ID: ");
+							String hotelId = sc.next();
+							List<BookingDetails> bookedList = bookingImpl.showBookingByHotelId(hotelId);
+							if(!bookedList.isEmpty()) {
+								System.out.println("-------Booking Details of Hotel of Hotel Id:" + hotelId + "-------");
+
+								for (BookingDetails details : bookedList)
+								System.out.println("Booking Id: " + details.getBookingId() + " || User Id: "
+										+ details.getUserId() + " || Check-in Date: " + details.getBookedFrom()
+										+ " || Check-out Date: " + details.getBookedTo() + " || Total Amount: "
+										+ details.getAmount());
+							}
+							else
+								System.out.println("No bookings under this hotel!");
+							break;
+						case 3:
+							/*
+							 * 
+							 * view guest list of specific hotel. (by hotelId)
+							 * 
+							 * 
+							 */
+							System.out.println("Enter the Hotel ID: ");
+								 hotelId = sc.next();
+								List<User> guestList = bookingImpl.showGuestList(hotelId);
+								if(!guestList.isEmpty()) {
+									System.out.println("-------Booking Details of Hotel of Hotel Id:" + hotelId + "-------");
+
+									for (User user : guestList)
+									System.out.println("User Id: " + user.getUserId() + " || User Name: "
+											+ user.getUserName() + " || Mobile: " + user.getMobileNo()
+											+ " || Email: " + user.getEmail() );
+								}
+								else
+									System.out.println("No guest list for this hotel! ");
+							break;
+						case 4:
+							/*
+							 * 
+							 * bookings for specified date.
+							 * 
+							 * 
+							 */
+							System.out.println("Enter Specific Date(yyyy-MM-dd)");
+							String date = sc.next();
+							bookedList = bookingImpl.showAllBookings(date);
+							if(!bookedList.isEmpty()) {
+
+								for (BookingDetails details : bookedList)
+								System.out.println("Booking Id: " + details.getBookingId() + " || User Id: "
+										+ details.getUserId() + " || Check-in Date: " + details.getBookedFrom()
+										+ " || Check-out Date: " + details.getBookedTo() + " || Total Amount: "
+										+ details.getAmount());
+							}
+							else
+								System.out.println("No bookings on this date!");
+							break;
+						}
 
 						/*
 						 * 
@@ -316,7 +402,7 @@ public class MainUi {
 
 					switch (user_choice) {
 					case 1:
-						System.out.println("Enter the Location to search for Hotels:");
+						System.out.println("Enter the City to search for Hotels:");
 						String hotel_location = sc.next();
 						hotelList = hotelImpl.searchByLocation(hotel_location);
 						for (Hotel hotel : hotelList) {
@@ -382,7 +468,7 @@ public class MainUi {
 					case 2:
 
 						System.out.println("Enter Hotel Id:");
-						int hotelId = sc.nextInt();
+						String hotelId = sc.next();
 						System.out.println("Showing all the rooms:");
 						/*
 						 * 
@@ -392,6 +478,45 @@ public class MainUi {
 						 * 
 						 * 
 						 */
+						List<RoomDetails> roomList = roomImplementation.listAll(hotelId);
+						String flagger = "N";
+						for (RoomDetails room : roomList) {
+							if (room.getAvailability() == 1)
+								flagger = "Y";
+							System.out.println("Room Id: " + room.getRoomId() /*
+																				 * + " || Room No.: " + room.getRoomNo()
+																				 */
+									+ " || Room Type: " + room.getRoomType() + " || Room Price: " + room.getPerNight()
+									+ " || Availability: " + flagger);
+						}
+						System.out.println("Enter Room Id:");
+						String roomId = sc.next();
+						System.out.println("Enter the check-in Date(yyyy-MM-dd)");
+						String checkinDate = sc.next();
+						System.out.println("Enter the check-out Date(yyyy-MM-dd)");
+						String checkoutDate = sc.next();
+						// check if same room id is not booked on same date from booking details table
+						System.out.println("Enter number of adults:");
+						int adultCount = sc.nextInt();
+						System.out.println("Enter number of children:");
+						int childCount = sc.nextInt();
+						BookingDetails bookingDetails = new BookingDetails();
+						bookingDetails.setUserId(userId);
+
+						bookingDetails.setBookedFrom(checkinDate);
+						bookingDetails.setBookedTo(checkoutDate);
+
+						bookingDetails.setNumberOfAdults(adultCount);
+						bookingDetails.setNumberOfChildren(childCount);
+						bookingDetails.setRoomId(roomId);
+						int bookingId = bookingImpl.addBooking(bookingDetails);
+
+						if (bookingId != 0) {
+
+							System.out.println("Hola! Booking Confirmed. Booking Id: " + bookingId);
+
+						} else
+							System.out.println("Error! Booking not confirmed yet!");
 
 						break;
 					case 3:
@@ -406,6 +531,20 @@ public class MainUi {
 						 * 
 						 * 
 						 */
+						
+						List<BookingDetails> myBookings =  bookingImpl.showMyBookings(userId);
+						if(!myBookings.isEmpty())
+						{
+							System.out.println("---------My Bookings-----------");
+							for(BookingDetails myBooking : myBookings)
+								System.out.println("Booking Id: " + myBooking.getBookingId() + " || User Id: "
+										+ myBooking.getUserId() + " || Check-in Date: " + myBooking.getBookedFrom()
+										+ " || Check-out Date: " + myBooking.getBookedTo() + " || Total Amount: "
+										+ myBooking.getAmount());
+						}
+						else
+							System.out.println("No bookings made by you yet!");
+						break;
 					default:
 						System.out.println("OOPS!!!!\nWrong Input. Please try again.");
 						user_choice = 0;
