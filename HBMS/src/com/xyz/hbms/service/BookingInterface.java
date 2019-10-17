@@ -17,4 +17,6 @@ public interface BookingInterface {
 	public List<BookingDetails> showMyBookings(String userId);
 
 	public List<BookingDetails> showAllBookings(String date);
+
+	public double getFinalAmount(BookingDetails bookingDetails);
 }

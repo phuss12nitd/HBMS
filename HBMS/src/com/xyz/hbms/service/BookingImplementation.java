@@ -66,4 +66,9 @@ public class BookingImplementation implements BookingInterface {
 		return bookingListDatewise;
 	}
 
+	@Override
+	public double getFinalAmount(BookingDetails bookingDetails) {
+		return bookingDao.bookingAmount(bookingDetails);
+	}
+
 }
