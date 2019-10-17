@@ -13,4 +13,5 @@ public interface HotelDao {
 	public List<Hotel> searchByLocation(String city);
 	public boolean addHotel(Hotel hotel) throws SQLException;
 	public boolean deleteHotel(String id) throws SQLException;
+	public boolean updateSpecialOffers(String hotelId, double percentageDiscount); 
 }

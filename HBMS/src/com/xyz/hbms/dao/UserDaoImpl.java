@@ -77,4 +77,29 @@ public class UserDaoImpl implements UserDao {
 		return role;
 	}
 
+
+
+
+	@Override
+	public String getUserId(String username, String password) throws SQLException {
+		String SQL = "SELECT USER_ID FROM USERS WHERE USER_NAME = ? AND USER_PASSWORD = ?";
+		Connection conn = getConnection();
+		ResultSet rs = null;
+		String role = null;
+		try {
+			PreparedStatement stat= conn.prepareStatement(SQL);
+			stat.setString(1, username);
+			stat.setString(2, password);
+			rs = stat.executeQuery();		
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		while(rs.next())
+		{
+			 role = (rs.getString("USER_ID"));
+		}
+		
+		return role;
+	}
+
 }

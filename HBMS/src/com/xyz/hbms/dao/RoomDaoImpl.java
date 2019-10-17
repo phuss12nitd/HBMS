@@ -25,10 +25,10 @@ public class RoomDaoImpl implements RoomDao {
 	}
 
 	@Override
-	public List<RoomDetails> showAll() throws SQLException {
+	public List<RoomDetails> showAll(String HotelId) throws SQLException {
 		List<RoomDetails> roomList = new ArrayList<RoomDetails>();
 		ResultSet resultSet = null;
-		String SQL = "SELECT * FROM ROOMDETAILS";
+		String SQL = "SELECT * FROM ROOMDETAILS where HOTEL_ID = '" + HotelId + "'";
 		Connection connection = getConnection();
 		try {
 			PreparedStatement stat = connection.prepareStatement(SQL);
@@ -39,12 +39,12 @@ public class RoomDaoImpl implements RoomDao {
 		}
 		while (resultSet.next()) {
 			RoomDetails roomDetails = new RoomDetails();
-			roomDetails.setHotelId(resultSet.getString("HOTEL_ID"));
+			roomDetails.setHotelId(HotelId);
 			roomDetails.setRoomId(resultSet.getString("ROOM_ID"));
 			roomDetails.setRoomNo(resultSet.getString("ROOM_NO"));
 			roomDetails.setRoomType(resultSet.getString("ROOM_TYPE"));
 			roomDetails.setPerNight(resultSet.getInt("PER_NIGHT_RATE"));
-			roomDetails.setAvailability(resultSet.getBoolean("AVAILABILITIES"));
+			roomDetails.setAvailability(resultSet.getInt("AVAILABILITIES"));
 			roomList.add(roomDetails);
 		}
 
@@ -53,7 +53,7 @@ public class RoomDaoImpl implements RoomDao {
 
 	@Override
 	public boolean addRoomDetails(RoomDetails roomDetails) {
-		String SQL = "INSERT INTO ROOMDETAILS VALUES ( ?, ?, ?, ?, ?, ?)";
+		String SQL = "INSERT INTO ROOMDETAILS VALUES (?, ?, ?, ?, ?, ?)";
 		Connection conn = getConnection();
 		int result = 0;
 		try {
@@ -63,7 +63,7 @@ public class RoomDaoImpl implements RoomDao {
 			preparedStatement.setString(3, roomDetails.getRoomNo());
 			preparedStatement.setString(4, roomDetails.getRoomType());
 			preparedStatement.setDouble(5, roomDetails.getPerNight());
-			preparedStatement.setBoolean(6, roomDetails.getAvailability());
+			preparedStatement.setInt(6, roomDetails.getAvailability());
 			result = preparedStatement.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -138,4 +138,52 @@ public class RoomDaoImpl implements RoomDao {
 		return 0;
 	}
 
-}
+	@Override
+	public RoomDetails getRoomDetails(String roomId) throws SQLException {
+
+		ResultSet resultSet = null;
+		String SQL = "SELECT * FROM ROOMDETAILS where ROOM_ID = '" + roomId + "'";
+		Connection connection = getConnection();
+		RoomDetails roomDetails = null;
+		try {
+			PreparedStatement stat = connection.prepareStatement(SQL);
+			resultSet = stat.executeQuery();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		while (resultSet.next()) {
+			 roomDetails = new RoomDetails();
+			roomDetails.setHotelId(resultSet.getString("HOTEL_ID"));
+			roomDetails.setRoomId(roomId);
+			roomDetails.setRoomNo(resultSet.getString("ROOM_NO"));
+			roomDetails.setRoomType(resultSet.getString("ROOM_TYPE"));
+			roomDetails.setPerNight(resultSet.getInt("PER_NIGHT_RATE"));
+			roomDetails.setAvailability(resultSet.getInt("AVAILABILITIES"));
+		}
+
+		return roomDetails;
+	}
+
+	@Override
+	public int updateAvailability(String roomId, int avail) {
+
+		String SQL = "UPDATE ROOMDETAILS SET AVAILABILITIES = ? where ROOM_ID = '" + roomId + "'";
+		Connection connection = getConnection();
+		if(avail == 1)
+			avail=0;
+		else avail=1;
+		int result = 0;
+		try {
+			PreparedStatement stat = connection.prepareStatement(SQL);
+			stat.setInt(1, avail);
+			result = stat.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return result;
+		}
+	}
+
+

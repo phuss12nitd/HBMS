@@ -92,6 +92,7 @@ public class HotelDaoImpl implements HotelDao{
 		List<Hotel> hotelList = new ArrayList<Hotel>();
 		ResultSet rs=null;
 		Connection conn = getConnection();
+		city=city.toUpperCase();
 		String query = "SELECT * FROM HOTEL WHERE CITY = '"+city + "'";
 		try {
 			PreparedStatement stat = conn.prepareStatement(query);
@@ -146,7 +147,7 @@ public class HotelDaoImpl implements HotelDao{
 		String query = "Insert into Hotel values (?,?,?,?,?,?,?,?,?,?,?)";
 		PreparedStatement stat = conn.prepareStatement(query);
 		stat.setString(1, hotel.getHotelId());
-		stat.setString(2, hotel.getCity());
+		stat.setString(2, hotel.getCity().toUpperCase());
 		stat.setString(3, hotel.getHotelName());
 		stat.setString(4, hotel.getAddress());
 		stat.setString(5, hotel.getDescription());
@@ -175,6 +176,29 @@ public class HotelDaoImpl implements HotelDao{
 		if(rs==1)	
 			return true;
 		return false;
+	}
+
+
+	@Override
+	public boolean updateSpecialOffers(String hotelId, double percentageDiscount) {
+		
+		
+		String query= "Update ROOMDETAILS set PER_NIGHT_RATE = "+(1-(percentageDiscount/100))+ "* PER_NIGHT_RATE WHERE HOTEL_ID = '"+hotelId+"'";
+		
+		Connection connection = getConnection();
+		int result = 0;
+		try {
+			PreparedStatement prepareStatement = connection.prepareStatement(query);
+			result = prepareStatement.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		if (result == 0) {
+			return false;
+		} else {
+			return true;
+		}
+		
 	}
 
 }
