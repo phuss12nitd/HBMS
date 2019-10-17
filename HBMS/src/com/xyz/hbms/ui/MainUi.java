@@ -23,13 +23,13 @@ import com.xyz.hbms.service.RoomImplementation;
 import com.xyz.hbms.service.RoomInterface;
 import com.xyz.hbms.service.UserImplementation;
 import com.xyz.hbms.service.UserInterface;
+import com.xyz.hbms.util.Validations;
 
 public class MainUi {
 
 	public static int manipulativeId = 199;
 
 	public static void main(String[] args) throws SQLException {
-
 		UserInterface userImpl = new UserImplementation();
 		HotelInterface hotelImpl = new HotelImplementation();
 		RoomInterface roomImplementation = new RoomImplementation();
@@ -42,6 +42,8 @@ public class MainUi {
 				"-----------------------------------------------------------------------------------------------------------------");
 		int choice = 0;
 		int flag = 1;
+		int flagAdmin=0;
+		while(flagAdmin ==0) {
 		while (flag != 0) {
 			System.out.println("1. Login Page");
 			System.out.println("2. Register");
@@ -69,19 +71,26 @@ public class MainUi {
 					while (check != 0) {
 						System.out.println("Enter username");
 						username = sc.next().toUpperCase();
+						/*
+						 * check for unique username from database
+						 * 
+						 * 
+						 */
 						System.out.println("Enter password");
 						password = sc.next().toUpperCase();
-						flag = 0;
 
-						String userRole = userImpl.checkRole(username, password);
-						userId = userImpl.getUserId(username, password);
-						if (userRole != null) {
-							System.out.println("Welcome " + userRole.toLowerCase());
-							check = 0;
-						} else
-							System.out.println(
-									"Wrong Username and Password.\nPlease check with your credentials\nLet's try it again\n\n");
-					}
+							flag = 0;
+
+							String userRole = userImpl.checkRole(username, password);
+
+							userId = userImpl.getUserId(username, password);
+							if (userRole != null) {
+								System.out.println("Welcome " + userRole.toLowerCase());
+								check = 0;
+							} else
+								System.out.println(
+										"Wrong Username and Password.\nPlease check with your credentials\nLet's try it again\n\n");
+						}
 				} else {
 					System.out.println("\"OOPS!!!!\\nWrong Input. Please try again.");
 				}
@@ -100,6 +109,7 @@ public class MainUi {
 					System.out.println("1. Hotel Management");
 					System.out.println("2. Room Management");
 					System.out.println("3. Generate Reports");
+					System.out.println("4. Logout");
 					admin_choice = sc.nextInt();
 
 					switch (admin_choice) {
@@ -132,16 +142,58 @@ public class MainUi {
 							System.out.println("Enter Avg Rate per night:");
 							newHotel.setAvgRatePerNight(sc.nextDouble());
 							System.out.println("Enter Phone No. 1");
-							newHotel.setPhoneNo1(sc.next());
-							System.out.println("Enter Phone No. 2");
-							newHotel.setPhoneNo2(sc.next());
+							int flag1=0;
+							while(flag1==0) {
+							String phone1 = sc.next();
+							if(Validations.checkPhone(phone1)) {
+								newHotel.setPhoneNo1(phone1);
+								flag1++;
+							}
+							else
+								System.out.println("Invalid Phone Number");
+							}
+							while(flag1==1) {
+								System.out.println("Enter Phone No. 2");
+							String phone2 = sc.next();
+							if(Validations.checkPhone(phone2)) {
+								newHotel.setPhoneNo2(phone2);
+								flag1++;
+							}
+							else
+								System.out.println("Invalid Phone Number");
+							}
+							while(flag1==2) {
 							System.out.println("Enter Rating:");
-							newHotel.setRating(sc.next());
+							String rating = sc.next();
+		
+							if(Validations.checkRating(rating)) {
+								newHotel.setRating(rating);
+								flag1++;
+							}
+							else
+								System.out.println("Rating value must be between 1 and 5(inclusive)");
+							}
+							while(flag1==3) {
 							System.out.println("Enter email:");
-							newHotel.setEmail(sc.next());
+							String email = sc.next();
+							if(Validations.checkEmail(email)) {
+							newHotel.setEmail(email);
+							flag1++;
+							}
+							else
+								System.out.println("Invalid email!");
+			
+							}
+							while(flag1==4) {
 							System.out.println("Enter fax:");
-							newHotel.setFax(sc.next());
-
+							String fax = sc.next();
+							if(Validations.checkFax(fax)) {
+								newHotel.setFax(fax);
+								flag1++;
+							}
+							else
+								System.out.println("Invalid Fax number!");
+							}
 							boolean response = hotelImpl.addHotel(newHotel);
 							if (response)
 								System.out.println("Hotel Registered Succesfully : " + hotelId);
@@ -156,7 +208,7 @@ public class MainUi {
 							if (response)
 								System.out.println("Hotel Removed Succesfully : " + hotelId);
 							else
-								System.out.println("Problem with the removal operation.");
+								System.out.println("Problem with the removal operation.Either Hotel doesn't exist.");
 
 							break;
 						case 3:
@@ -183,6 +235,10 @@ public class MainUi {
 								hotelId = sc.next();
 								System.out.println("Enter the percentage discount: ");
 								double percentageDiscount = sc.nextDouble();
+								if(percentageDiscount < 0)
+									percentageDiscount =0;
+								else if(percentageDiscount >100)
+									percentageDiscount = 100;
 								boolean truth = hotelImpl.includeSpecialOffers(hotelId, percentageDiscount);
 								if (truth) {
 									System.err.println("special offers included with hotel Id: " + hotelId);
@@ -222,13 +278,32 @@ public class MainUi {
 							roomDetails.setRoomId(sc.next());
 							System.out.println("Enter the room number");
 							roomDetails.setRoomNo(sc.next());
+							int flag1=0;
+							while(flag1==0) {
 							System.out.println("Enter the room type");
-							roomDetails.setRoomType(sc1.nextLine());
+							String roomType=sc1.next();
+							if(Validations.checkRoomType(roomType)) {
+							roomDetails.setRoomType(roomType);
+							flag1++;
+							}
+							else
+								{System.out.println("Invalid Room Type. Please enter from the pool :-");
+									System.out.println("Standard || Deluxe || Executive || Studio || Suite");
+								}
+						}
 							System.out.println("Enter the room per night: ");
 							roomDetails.setPerNight(sc.nextDouble());
+						while(flag1==1) {
 							System.out.println("Enter the availablity: ");
-							roomDetails.setAvailability(sc.nextInt());
-
+							int avail = sc.nextInt();
+							if(avail == 1 || avail ==0)
+							{
+								roomDetails.setAvailability(avail);
+								flag1++;
+							}
+							else
+								System.out.println("Please choose 1 for unoccupied and 0 for occupied");
+						}
 							boolean result = roomImplementation.insertRoomDetails(roomDetails);
 							if (result) {
 								System.out.println("Room added successfully with room Id: " + roomDetails.getRoomId());
@@ -244,7 +319,7 @@ public class MainUi {
 							if (result) {
 								System.out.println("The room was deleted with Id :" + roomId);
 							} else {
-								System.out.println("There was a problem with the delete operation");
+								System.out.println("There was a problem with the delete operation. Maybe room doesn't exist.");
 							}
 
 							break;
@@ -254,6 +329,10 @@ public class MainUi {
 							String roomId = sc.next();
 							System.out.println("Enter the discount percentage");
 							double roomDiscountPercentage = sc.nextDouble();
+							if(roomDiscountPercentage < 0)
+								roomDiscountPercentage =0;
+							else if(roomDiscountPercentage >100)
+								roomDiscountPercentage = 100;
 							boolean result = roomImplementation.updateRoomPerNight(roomId, roomDiscountPercentage);
 							if (result) {
 								System.out.println("The per night rate was updated with room id: " + roomId);
@@ -319,16 +398,16 @@ public class MainUi {
 							System.out.println("Enter the Hotel ID: ");
 							String hotelId = sc.next();
 							List<BookingDetails> bookedList = bookingImpl.showBookingByHotelId(hotelId);
-							if(!bookedList.isEmpty()) {
-								System.out.println("-------Booking Details of Hotel of Hotel Id:" + hotelId + "-------");
+							if (!bookedList.isEmpty()) {
+								System.out
+										.println("-------Booking Details of Hotel of Hotel Id:" + hotelId + "-------");
 
 								for (BookingDetails details : bookedList)
-								System.out.println("Booking Id: " + details.getBookingId() + " || User Id: "
-										+ details.getUserId() + " || Check-in Date: " + details.getBookedFrom()
-										+ " || Check-out Date: " + details.getBookedTo() + " || Total Amount: "
-										+ details.getAmount());
-							}
-							else
+									System.out.println("Booking Id: " + details.getBookingId() + " || User Id: "
+											+ details.getUserId() + " || Check-in Date: " + details.getBookedFrom()
+											+ " || Check-out Date: " + details.getBookedTo() + " || Total Amount: "
+											+ details.getAmount());
+							} else
 								System.out.println("No bookings under this hotel!");
 							break;
 						case 3:
@@ -339,18 +418,18 @@ public class MainUi {
 							 * 
 							 */
 							System.out.println("Enter the Hotel ID: ");
-								 hotelId = sc.next();
-								List<User> guestList = bookingImpl.showGuestList(hotelId);
-								if(!guestList.isEmpty()) {
-									System.out.println("-------Booking Details of Hotel of Hotel Id:" + hotelId + "-------");
+							hotelId = sc.next();
+							List<User> guestList = bookingImpl.showGuestList(hotelId);
+							if (!guestList.isEmpty()) {
+								System.out
+										.println("-------Booking Details of Hotel of Hotel Id:" + hotelId + "-------");
 
-									for (User user : guestList)
+								for (User user : guestList)
 									System.out.println("User Id: " + user.getUserId() + " || User Name: "
-											+ user.getUserName() + " || Mobile: " + user.getMobileNo()
-											+ " || Email: " + user.getEmail() );
-								}
-								else
-									System.out.println("No guest list for this hotel! ");
+											+ user.getUserName() + " || Mobile: " + user.getMobileNo() + " || Email: "
+											+ user.getEmail());
+							} else
+								System.out.println("No guest list for this hotel! ");
 							break;
 						case 4:
 							/*
@@ -362,15 +441,14 @@ public class MainUi {
 							System.out.println("Enter Specific Date(yyyy-MM-dd)");
 							String date = sc.next();
 							bookedList = bookingImpl.showAllBookings(date);
-							if(!bookedList.isEmpty()) {
+							if (!bookedList.isEmpty()) {
 
 								for (BookingDetails details : bookedList)
-								System.out.println("Booking Id: " + details.getBookingId() + " || User Id: "
-										+ details.getUserId() + " || Check-in Date: " + details.getBookedFrom()
-										+ " || Check-out Date: " + details.getBookedTo() + " || Total Amount: "
-										+ details.getAmount());
-							}
-							else
+									System.out.println("Booking Id: " + details.getBookingId() + " || User Id: "
+											+ details.getUserId() + " || Check-in Date: " + details.getBookedFrom()
+											+ " || Check-out Date: " + details.getBookedTo() + " || Total Amount: "
+											+ details.getAmount());
+							} else
 								System.out.println("No bookings on this date!");
 							break;
 						}
@@ -383,6 +461,10 @@ public class MainUi {
 						 * 
 						 * 
 						 */
+						break;
+					case 4: 
+						System.out.println("Logging off !");
+						flag++;
 						break;
 					default:
 						System.out.println("\"OOPS!!!!\\nWrong Input. Please try again.");
@@ -467,6 +549,8 @@ public class MainUi {
 
 					case 2:
 
+						int flagFinal=0;
+						while(flagFinal == 0) {
 						System.out.println("Enter Hotel Id:");
 						String hotelId = sc.next();
 						System.out.println("Showing all the rooms:");
@@ -489,35 +573,70 @@ public class MainUi {
 									+ " || Room Type: " + room.getRoomType() + " || Room Price: " + room.getPerNight()
 									+ " || Availability: " + flagger);
 						}
+						
 						System.out.println("Enter Room Id:");
 						String roomId = sc.next();
+						BookingDetails bookingDetails = new BookingDetails();
+						int flag1=0;
+						while(flag1==0) {
 						System.out.println("Enter the check-in Date(yyyy-MM-dd)");
 						String checkinDate = sc.next();
 						System.out.println("Enter the check-out Date(yyyy-MM-dd)");
 						String checkoutDate = sc.next();
-						// check if same room id is not booked on same date from booking details table
+						if(Validations.checkBookedFrom(checkinDate, checkoutDate))
+						{
+							// check if same room id is not booked on same date from booking details table
+							bookingDetails.setBookedFrom(checkinDate);
+							bookingDetails.setBookedTo(checkoutDate);
+							flag1++;
+						}
+						else
+							System.out.println("Either Invalid Date format or Checkout Date earlier than Checkin Date");
+					}
+						while(flag1==1) {
 						System.out.println("Enter number of adults:");
 						int adultCount = sc.nextInt();
-						System.out.println("Enter number of children:");
-						int childCount = sc.nextInt();
-						BookingDetails bookingDetails = new BookingDetails();
+						if(adultCount>2)
+							System.out.println("You cannot have more than two adults in a room.");
+						else {
+							flag1++;
+							bookingDetails.setNumberOfAdults(adultCount);
+						}
+						}	
+						while(flag1==2)
+						{
+							System.out.println("Enter number of children:");
+							int childCount = sc.nextInt();
+							if(childCount>2)
+								System.out.println("You cannot have two children in a room");
+							else { flag1++;
+							bookingDetails.setNumberOfChildren(childCount);
+						}
+						}
 						bookingDetails.setUserId(userId);
 
-						bookingDetails.setBookedFrom(checkinDate);
-						bookingDetails.setBookedTo(checkoutDate);
-
-						bookingDetails.setNumberOfAdults(adultCount);
-						bookingDetails.setNumberOfChildren(childCount);
 						bookingDetails.setRoomId(roomId);
+						// display amount and take confirmation from user
+						double bookingAmount = bookingImpl.getFinalAmount(bookingDetails);
+						System.out.println("Your total amount of booking: " + bookingAmount);
+						System.out.println("Please confirm to Proceed:-");
+						System.out.println("1. Confirm");
+						System.out.println("2. Plan again");
+						int plan = sc.nextInt();
+						if(plan ==1) {
 						int bookingId = bookingImpl.addBooking(bookingDetails);
 
 						if (bookingId != 0) {
 
 							System.out.println("Hola! Booking Confirmed. Booking Id: " + bookingId);
+							flagFinal++;
 
 						} else
 							System.out.println("Error! Booking not confirmed yet!");
-
+						}
+						else
+							continue;
+					}
 						break;
 					case 3:
 						/*
@@ -531,18 +650,16 @@ public class MainUi {
 						 * 
 						 * 
 						 */
-						
-						List<BookingDetails> myBookings =  bookingImpl.showMyBookings(userId);
-						if(!myBookings.isEmpty())
-						{
+
+						List<BookingDetails> myBookings = bookingImpl.showMyBookings(userId);
+						if (!myBookings.isEmpty()) {
 							System.out.println("---------My Bookings-----------");
-							for(BookingDetails myBooking : myBookings)
+							for (BookingDetails myBooking : myBookings)
 								System.out.println("Booking Id: " + myBooking.getBookingId() + " || User Id: "
 										+ myBooking.getUserId() + " || Check-in Date: " + myBooking.getBookedFrom()
 										+ " || Check-out Date: " + myBooking.getBookedTo() + " || Total Amount: "
 										+ myBooking.getAmount());
-						}
-						else
+						} else
 							System.out.println("No bookings made by you yet!");
 						break;
 					default:
@@ -555,12 +672,22 @@ public class MainUi {
 
 			break;
 		case 2:
+			int flag1 = 0;
 			User user = new User();
 			System.out.println("Enter User Id:");
 			// check if user_id is unique or not
 			user.setUserId(sc.next());
+			while(flag1==0) {
 			System.out.println("Enter Password");
-			user.setUserPassword(sc.next());
+			String pass = sc.next();
+			if (Validations.checkPassword(pass)) {
+				user.setUserPassword(pass);
+				flag1++;
+			}
+			else
+				System.out.println(
+						"Ensure that password is 8 to 20 characters long and contains a mix of upper and lower case characters, one numeric and one special character");
+			}
 			System.out.println("Enter User Role:");
 			System.out.println("1. Customer");
 			System.out.println("2. Employee");
@@ -572,20 +699,55 @@ public class MainUi {
 			System.out.println("Enter UserName");
 			// check if username is unique or not
 			user.setUserName(sc.next());
+			while(flag1==1) {
 			System.out.println("Enter Mobile Numnber");
-			user.setMobileNo(sc.next());
+			String mobile = sc.next();
+			if(Validations.checkMobile(mobile)) {
+				user.setMobileNo(mobile);
+				flag1++;
+			}
+			else
+				System.out.println("Invalid Mobile No. Please enter again.");
+			}
+			while(flag1==2) {
 			System.out.println("Enter Phone");
-			user.setPhone(sc.next());
+			String phone = sc.next();
+			if(Validations.checkPhone(phone)) {
+				user.setPhone(phone);
+				flag1++;
+			}
+			else
+				System.out.println("Invalid Phone No. Please enter again.");
+			}
+			
 			System.out.println("Enter Address");
-			user.setAddress(sc.next());
+			user.setAddress(sc1.nextLine());
+			
+			while(flag1==3) {
 			System.out.println("Enter Email");
-			user.setEmail(sc.next());
+			String email = sc.next();
+			if(Validations.checkEmail(email)) {
+				user.setEmail(email);
+				flag1++;
+			}
+			else
+				System.out.println("Invalid email. Please enter again.");
+			}
 			boolean result = userImpl.registerUser(user);
 			if (result)
-				System.out.println(user.getUserRole().toLowerCase() + " added.");
-
+				{System.out.println(user.getUserRole().toLowerCase() + " added.");
+				choice =3;}
+			else
+				System.out.println("User registration unsuccesful! Please Try again\n");
+			break;
+		case 3:
+			System.out.println("\n\n");
+			System.exit(0);
+			break;
 		}
 
+		
+	}
 	}
 
 }
