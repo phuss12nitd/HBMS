@@ -32,7 +32,7 @@ public class BookingDaoImpl implements BookingDao {
 		return connection;
 	}
 
-	private double bookingAmount(BookingDetails bookingDetails) {
+	public double bookingAmount(BookingDetails bookingDetails) {
 		Connection conn = getConnection();
 		String amountQuery = "Select Per_Night_Rate from roomdetails where room_id = '" + bookingDetails.getRoomId()
 				+ "'";

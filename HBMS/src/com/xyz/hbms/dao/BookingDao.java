@@ -17,4 +17,6 @@ public interface BookingDao {
 	public List<BookingDetails> listMyBookings(String userId);
 
 	public List<BookingDetails> getAllBookings();
+
+	public double bookingAmount(BookingDetails bookingDetails);
 }
