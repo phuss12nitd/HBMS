@@ -51,14 +51,36 @@ public class RoomDaoImpl implements RoomDao {
 		return roomList;
 	}
 
+	
+	private String getRoomId() {
+		Connection conn = getConnection();
+		String seqqueryString = "SELECT roomSeq.NEXTVAL FROM DUAL";
+		PreparedStatement stat;
+		int roomId = 0;
+		try {
+			stat = conn.prepareStatement(seqqueryString);
+			ResultSet rs = stat.executeQuery();
+			while (rs.next())
+				roomId = rs.getInt(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return "R"+roomId;
+
+	}
+	
+	
+	
+	
 	@Override
 	public boolean addRoomDetails(RoomDetails roomDetails) {
+		String roomId = getRoomId();
 		String SQL = "INSERT INTO ROOMDETAILS VALUES (?, ?, ?, ?, ?, ?)";
 		Connection conn = getConnection();
 		int result = 0;
 		try {
 			PreparedStatement preparedStatement = conn.prepareStatement(SQL);
-			preparedStatement.setString(1, roomDetails.getHotelId());
+			preparedStatement.setString(1, roomId);
 			preparedStatement.setString(2, roomDetails.getRoomId());
 			preparedStatement.setString(3, roomDetails.getRoomNo());
 			preparedStatement.setString(4, roomDetails.getRoomType());

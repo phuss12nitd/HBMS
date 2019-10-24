@@ -25,6 +25,7 @@ public class HotelDaoImpl implements HotelDao{
 	}
 	
 	
+	
 	@Override
 	public List<Hotel> showAll() throws SQLException {
 		List<Hotel> hotelList = new ArrayList<Hotel>();
@@ -141,12 +142,32 @@ public class HotelDaoImpl implements HotelDao{
 	}
 
 
+	private String getHotelId() {
+		Connection conn = getConnection();
+		String seqqueryString = "SELECT hotSeq.NEXTVAL FROM DUAL";
+		PreparedStatement stat;
+		int hotelId = 0;
+		try {
+			stat = conn.prepareStatement(seqqueryString);
+			ResultSet rs = stat.executeQuery();
+			while (rs.next())
+				hotelId = rs.getInt(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return "H"+hotelId;
+
+	}
+	
+	
+	
 	@Override
 	public boolean addHotel(Hotel hotel) throws SQLException {
 		Connection conn = getConnection();
 		String query = "Insert into Hotel values (?,?,?,?,?,?,?,?,?,?,?)";
+		String hotelId = getHotelId();
 		PreparedStatement stat = conn.prepareStatement(query);
-		stat.setString(1, hotel.getHotelId());
+		stat.setString(1,hotelId);
 		stat.setString(2, hotel.getCity().toUpperCase());
 		stat.setString(3, hotel.getHotelName());
 		stat.setString(4, hotel.getAddress());

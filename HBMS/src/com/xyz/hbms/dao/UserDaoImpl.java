@@ -24,17 +24,34 @@ public class UserDaoImpl implements UserDao {
 		return connection;
 	}
 	
+	private String getUserId() {
+		Connection conn = getConnection();
+		String seqqueryString = "SELECT userSeq.NEXTVAL FROM DUAL";
+		PreparedStatement stat;
+		int userId = 0;
+		try {
+			stat = conn.prepareStatement(seqqueryString);
+			ResultSet rs = stat.executeQuery();
+			while (rs.next())
+				userId = rs.getInt(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return "U"+userId;
+
+	}
 	
 	
 	
 	@Override
 	public boolean addUser(User user) {
+		String userId = getUserId();
 		String SQL = "INSERT INTO USERS VALUES ( ?, ?, ?, ?, ?, ?, ?, ?)";
 		Connection conn = getConnection();
 		int rs = 0;
 		try {
 			PreparedStatement stat = conn.prepareStatement(SQL);
-			stat.setString(1, user.getUserId());
+			stat.setString(1, userId);
 			stat.setString(2, user.getUserPassword());
 			stat.setString(3, user.getUserRole());
 			stat.setString(4, user.getUserName());

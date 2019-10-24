@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import com.xyz.hbms.db.ConnectionFactory;
+import com.xyz.hbms.exception.RoomNotFoundException;
 import com.xyz.hbms.model.BookingDetails;
 import com.xyz.hbms.model.RoomDetails;
 import com.xyz.hbms.model.User;
@@ -79,7 +80,7 @@ public class BookingDaoImpl implements BookingDao {
 	}
 
 	@Override
-	public int bookRoom(BookingDetails bookingDetails) throws SQLException {
+	public int bookRoom(BookingDetails bookingDetails) throws SQLException, RoomNotFoundException {
 		Connection conn = getConnection();
 		double amount = bookingAmount(bookingDetails);
 		int bookingSeq = getBookingId();
@@ -162,7 +163,6 @@ public class BookingDaoImpl implements BookingDao {
 				guestList.add(guest);
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return guestList;
