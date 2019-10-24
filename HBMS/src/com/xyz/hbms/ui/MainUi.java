@@ -1,16 +1,18 @@
 package com.xyz.hbms.ui;
 
-import java.util.Date;
+
 import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
+import java.util.logging.Logger;
 
-import org.omg.Messaging.SyncScopeHelper;
+import org.apache.log4j.PropertyConfigurator;
 
+import com.xyz.hbms.exception.HotelNotFoundException;
+import com.xyz.hbms.exception.RoomNotFoundException;
+import com.xyz.hbms.exception.UserNotFoundException;
 import com.xyz.hbms.model.BookingDetails;
 import com.xyz.hbms.model.Hotel;
 import com.xyz.hbms.model.RoomDetails;
@@ -27,9 +29,15 @@ import com.xyz.hbms.util.Validations;
 
 public class MainUi {
 
-	public static int manipulativeId = 199;
 
 	public static void main(String[] args) throws SQLException {
+		
+		final Logger logger;
+
+		PropertyConfigurator.configure(".\\resources\\log4j.properties");
+
+		 logger = Logger.getLogger(MainUi.class.getName());
+		
 		UserInterface userImpl = new UserImplementation();
 		HotelInterface hotelImpl = new HotelImplementation();
 		RoomInterface roomImplementation = new RoomImplementation();
@@ -52,7 +60,7 @@ public class MainUi {
 				flag = 0;
 
 			} else {
-				System.out.println("\"OOPS!!!!\\nWrong Input. Please try again.");
+				System.out.println("\nOOPS!!!!\nWrong Input. Please try again.");
 			}
 		}
 		switch (choice) {
@@ -66,7 +74,7 @@ public class MainUi {
 				System.out.println("2. Customer ");
 				System.out.println("3. Hotel Employee ");
 				selection = sc.nextInt();
-				if (selection >= 1 || selection <= 3) {
+				if (selection >= 1 && selection <= 3) {
 					int check = 1;
 					while (check != 0) {
 						System.out.println("Enter username");
@@ -81,18 +89,24 @@ public class MainUi {
 
 							flag = 0;
 
-							String userRole = userImpl.checkRole(username, password);
-
-							userId = userImpl.getUserId(username, password);
-							if (userRole != null) {
-								System.out.println("Welcome " + userRole.toLowerCase());
-								check = 0;
-							} else
-								System.out.println(
-										"Wrong Username and Password.\nPlease check with your credentials\nLet's try it again\n\n");
-						}
+							String userRole;
+							try {
+								userRole = userImpl.checkRole(username, password);
+								userId = userImpl.getUserId(username, password);
+								if (userRole != null) {
+									System.out.println("Welcome " + userRole.toLowerCase());
+									check = 0;
+								} else
+									System.out.println(
+											"Wrong Username and Password.\nPlease check with your credentials\nLet's try it again\n\n");
+							
+							} catch (UserNotFoundException e) {
+								logger.info("User Login: "+e.getMessage());
+								/*logger.warning("User Login: "+e.getMessage());*/
+							}
+					}
 				} else {
-					System.out.println("\"OOPS!!!!\\nWrong Input. Please try again.");
+					System.out.println("\nOOPS!!!!\nWrong Input. Please try again.");
 				}
 
 			}
@@ -127,9 +141,8 @@ public class MainUi {
 						switch (ch) {
 						case 1:
 							Hotel newHotel = new Hotel();
-							String hotelId = "H" + manipulativeId;
-							manipulativeId++;
-							newHotel.setHotelId(hotelId);
+							String hotelId;
+							
 							System.out.println("Enter City:");
 							newHotel.setCity(sc.next());
 							System.out.println("Enter Hotel Name:");
@@ -196,7 +209,7 @@ public class MainUi {
 							}
 							boolean response = hotelImpl.addHotel(newHotel);
 							if (response)
-								System.out.println("Hotel Registered Succesfully : " + hotelId);
+								System.out.println("Hotel Registered Succesfully : " );
 							else
 								System.out.println("Problem with the registration.");
 							break;
@@ -204,11 +217,16 @@ public class MainUi {
 
 							System.out.println("Enter Hotel Id to remove it:");
 							hotelId = sc.next();
-							response = hotelImpl.removeHotel(hotelId);
-							if (response)
-								System.out.println("Hotel Removed Succesfully : " + hotelId);
-							else
-								System.out.println("Problem with the removal operation.Either Hotel doesn't exist.");
+					
+							try {
+								response = hotelImpl.removeHotel(hotelId);
+								if (response)
+									System.out.println("Hotel Removed Succesfully : " );
+								else
+									System.out.println("Problem with the removal operation.Either Hotel doesn't exist.");
+							} catch (HotelNotFoundException e) {
+								logger.info("Hotel Management:"+e.getMessage());
+							}
 
 							break;
 						case 3:
@@ -222,11 +240,16 @@ public class MainUi {
 								hotelId = sc.next();
 								System.out.println("Enter the updated description");
 								String hotelDescription = sc1.nextLine();
-								boolean result = hotelImpl.changeHotelDescription(hotelId, hotelDescription);
-								if (result) {
-									System.out.println("Hotel description updated successfully with ID: " + hotelId);
-								} else {
-									System.out.println("Problem with the updation operation");
+								boolean result;
+								try {
+									result = hotelImpl.changeHotelDescription(hotelId, hotelDescription);
+									if (result) {
+										System.out.println("Hotel description updated successfully with ID: " + hotelId);
+									} else {
+										System.out.println("Problem with the updation operation");
+									}
+								} catch (HotelNotFoundException e) {
+									logger.info("Hotel Management"+e.getMessage());
 								}
 								break;
 							case 2:
@@ -239,11 +262,16 @@ public class MainUi {
 									percentageDiscount =0;
 								else if(percentageDiscount >100)
 									percentageDiscount = 100;
-								boolean truth = hotelImpl.includeSpecialOffers(hotelId, percentageDiscount);
-								if (truth) {
-									System.err.println("special offers included with hotel Id: " + hotelId);
-								} else {
-									System.out.println("There was a problem with the operation");
+								boolean truth;
+								try {
+									truth = hotelImpl.includeSpecialOffers(hotelId, percentageDiscount);
+									if (truth) {
+										System.err.println("special offers included with hotel Id: " + hotelId);
+									} else {
+										System.out.println("There was a problem with the operation");
+									}
+								} catch (HotelNotFoundException e) {
+									logger.info("Hotel Management: "+e.getMessage());
 								}
 								break;
 							default:
@@ -315,11 +343,16 @@ public class MainUi {
 						case 2: {
 							System.out.println("Enter the room Id to remove: ");
 							String roomId = sc.next();
-							boolean result = roomImplementation.removeRoomDetails(roomId);
-							if (result) {
-								System.out.println("The room was deleted with Id :" + roomId);
-							} else {
-								System.out.println("There was a problem with the delete operation. Maybe room doesn't exist.");
+							boolean result;
+							try {
+								result = roomImplementation.removeRoomDetails(roomId);
+								if (result) {
+									System.out.println("The room was deleted with Id :" + roomId);
+								} else {
+									System.out.println("There was a problem with the delete operation. Maybe room doesn't exist.");
+								}
+							} catch (RoomNotFoundException e) {
+								logger.info("Room Management: "+e.getMessage());
 							}
 
 							break;
@@ -333,11 +366,16 @@ public class MainUi {
 								roomDiscountPercentage =0;
 							else if(roomDiscountPercentage >100)
 								roomDiscountPercentage = 100;
-							boolean result = roomImplementation.updateRoomPerNight(roomId, roomDiscountPercentage);
-							if (result) {
-								System.out.println("The per night rate was updated with room id: " + roomId);
-							} else {
-								System.out.println("There was a problem with the updation process");
+							boolean result;
+							try {
+								result = roomImplementation.updateRoomPerNight(roomId, roomDiscountPercentage);
+								if (result) {
+									System.out.println("The per night rate was updated with room id: " + roomId);
+								} else {
+									System.out.println("There was a problem with the updation process");
+								}
+							} catch (RoomNotFoundException e) {
+								logger.info("Room Management: "+e.getMessage());
 							}
 							break;
 						}
@@ -346,25 +384,23 @@ public class MainUi {
 							String final_avail = null;
 							System.out.println("Enter the room Id to make it available: ");
 							String roomId = sc.next();
-							RoomDetails roomdetails = roomImplementation.findRoomById(roomId);
-							if (roomdetails.getAvailability() == 1)
-								System.out.println("The room is already available");
-							else
-								result = roomImplementation.updateAvailability(roomId, roomdetails.getAvailability());
-							if (roomdetails.getAvailability() == 1)
-								final_avail = "Not available";
-							else
-								final_avail = "Available";
-							if (result == 1)
-								System.out.println("Room availability of Room Id:" + roomId + " : " + final_avail);
-							/*
-							 * 
-							 * 
-							 * update room availability from N to Y.
-							 * 
-							 * 
-							 * 
-							 */
+							RoomDetails roomdetails;
+							try {
+								roomdetails = roomImplementation.findRoomById(roomId);
+								if (roomdetails.getAvailability() == 1)
+									System.out.println("The room is already available");
+								else
+									result = roomImplementation.updateAvailability(roomId, roomdetails.getAvailability());
+								if (roomdetails.getAvailability() == 1)
+									final_avail = "Not available";
+								else
+									final_avail = "Available";
+								if (result == 1)
+									System.out.println("Room availability of Room Id:" + roomId + " : " + final_avail);
+							} catch (RoomNotFoundException e) {
+								logger.info("Room Management: "+e.getMessage());
+							}
+							
 						}
 							break;
 						default: {
@@ -397,18 +433,23 @@ public class MainUi {
 							 */
 							System.out.println("Enter the Hotel ID: ");
 							String hotelId = sc.next();
-							List<BookingDetails> bookedList = bookingImpl.showBookingByHotelId(hotelId);
-							if (!bookedList.isEmpty()) {
-								System.out
-										.println("-------Booking Details of Hotel of Hotel Id:" + hotelId + "-------");
-
-								for (BookingDetails details : bookedList)
-									System.out.println("Booking Id: " + details.getBookingId() + " || User Id: "
-											+ details.getUserId() + " || Check-in Date: " + details.getBookedFrom()
-											+ " || Check-out Date: " + details.getBookedTo() + " || Total Amount: "
-											+ details.getAmount());
-							} else
-								System.out.println("No bookings under this hotel!");
+							List<BookingDetails> bookedList;
+							try {
+								bookedList = bookingImpl.showBookingByHotelId(hotelId);
+								if (!bookedList.isEmpty()) {
+									System.out
+									.println("-------Booking Details of Hotel of Hotel Id:" + hotelId + "-------");
+									
+									for (BookingDetails details : bookedList)
+										System.out.println("Booking Id: " + details.getBookingId() + " || User Id: "
+												+ details.getUserId() + " || Check-in Date: " + details.getBookedFrom()
+												+ " || Check-out Date: " + details.getBookedTo() + " || Total Amount: "
+												+ details.getAmount());
+								} else
+									System.out.println("No bookings under this hotel!");
+							} catch (HotelNotFoundException e) {
+								logger.info("Booking Reports : "+e.getMessage());
+							}
 							break;
 						case 3:
 							/*
@@ -419,17 +460,22 @@ public class MainUi {
 							 */
 							System.out.println("Enter the Hotel ID: ");
 							hotelId = sc.next();
-							List<User> guestList = bookingImpl.showGuestList(hotelId);
-							if (!guestList.isEmpty()) {
-								System.out
-										.println("-------Booking Details of Hotel of Hotel Id:" + hotelId + "-------");
-
-								for (User user : guestList)
-									System.out.println("User Id: " + user.getUserId() + " || User Name: "
-											+ user.getUserName() + " || Mobile: " + user.getMobileNo() + " || Email: "
-											+ user.getEmail());
-							} else
-								System.out.println("No guest list for this hotel! ");
+							List<User> guestList;
+							try {
+								guestList = bookingImpl.showGuestList(hotelId);
+								if (!guestList.isEmpty()) {
+									System.out
+									.println("-------Booking Details of Hotel of Hotel Id:" + hotelId + "-------");
+									
+									for (User user : guestList)
+										System.out.println("User Id: " + user.getUserId() + " || User Name: "
+												+ user.getUserName() + " || Mobile: " + user.getMobileNo() + " || Email: "
+												+ user.getEmail());
+								} else
+									System.out.println("No guest list for this hotel! ");
+							} catch (HotelNotFoundException e) {
+								logger.info("Booking Reports : "+e.getMessage());
+							}
 							break;
 						case 4:
 							/*
@@ -624,15 +670,20 @@ public class MainUi {
 						System.out.println("2. Plan again");
 						int plan = sc.nextInt();
 						if(plan ==1) {
-						int bookingId = bookingImpl.addBooking(bookingDetails);
+						int bookingId = 0;
+						try {
+							bookingId = bookingImpl.addBooking(bookingDetails);
+							if (bookingId != 0) {
+								
+								System.out.println("Hola! Booking Confirmed. Booking Id: " + bookingId);
+								flagFinal++;
+								
+							} else
+								System.out.println("Error! Booking not confirmed yet!");
+						} catch (RoomNotFoundException e) {
+							logger.info("Room Management: "+e.getMessage());
+						}
 
-						if (bookingId != 0) {
-
-							System.out.println("Hola! Booking Confirmed. Booking Id: " + bookingId);
-							flagFinal++;
-
-						} else
-							System.out.println("Error! Booking not confirmed yet!");
 						}
 						else
 							continue;
@@ -651,16 +702,21 @@ public class MainUi {
 						 * 
 						 */
 
-						List<BookingDetails> myBookings = bookingImpl.showMyBookings(userId);
-						if (!myBookings.isEmpty()) {
-							System.out.println("---------My Bookings-----------");
-							for (BookingDetails myBooking : myBookings)
-								System.out.println("Booking Id: " + myBooking.getBookingId() + " || User Id: "
-										+ myBooking.getUserId() + " || Check-in Date: " + myBooking.getBookedFrom()
-										+ " || Check-out Date: " + myBooking.getBookedTo() + " || Total Amount: "
-										+ myBooking.getAmount());
-						} else
-							System.out.println("No bookings made by you yet!");
+						List<BookingDetails> myBookings;
+						try {
+							myBookings = bookingImpl.showMyBookings(userId);
+							if (!myBookings.isEmpty()) {
+								System.out.println("---------My Bookings-----------");
+								for (BookingDetails myBooking : myBookings)
+									System.out.println("Booking Id: " + myBooking.getBookingId() + " || User Id: "
+											+ myBooking.getUserId() + " || Check-in Date: " + myBooking.getBookedFrom()
+											+ " || Check-out Date: " + myBooking.getBookedTo() + " || Total Amount: "
+											+ myBooking.getAmount());
+							} else
+								System.out.println("No bookings made by you yet!");
+						} catch (UserNotFoundException e) {
+							logger.info("My Bookings: "+e.getMessage());
+						}
 						break;
 					default:
 						System.out.println("OOPS!!!!\nWrong Input. Please try again.");
@@ -748,6 +804,7 @@ public class MainUi {
 
 		
 	}
+		sc.close();
+		sc1.close();
 	}
-
 }
