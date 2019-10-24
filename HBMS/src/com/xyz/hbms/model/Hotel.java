@@ -23,6 +23,23 @@ public class Hotel {
 	}
 
 
+	public Hotel(String hotelId, String city, String hotelName, String address, String description,
+			double avgRatePerNight, String phoneNo1, String phoneNo2, String rating, String email, String fax) {
+		super();
+		this.hotelId = hotelId;
+		this.city = city;
+		this.hotelName = hotelName;
+		this.address = address;
+		this.description = description;
+		this.avgRatePerNight = avgRatePerNight;
+		this.phoneNo1 = phoneNo1;
+		this.phoneNo2 = phoneNo2;
+		this.rating = rating;
+		this.email = email;
+		this.fax = fax;
+	}
+
+
 	public String getHotelId() {
 		return hotelId;
 	}
