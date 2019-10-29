@@ -1,5 +1,12 @@
 package com.xyz.hbms.service;
 
+/*
+ * Booking service implementation
+ * It implements BookingInterface
+ * It performs booking related operations
+ * 
+ */
+
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -19,13 +26,23 @@ import com.xyz.hbms.model.User;
 
 public class BookingImplementation implements BookingInterface {
 	
+	//logger statements to keep the log generating at every function call.
 	final Logger logger = Logger.getLogger(BookingImplementation.class.getName());
+	
+	// making an object of BookingDaoImpl to use it for implementing functions
 	BookingDao bookingDao = new BookingDaoImpl();
 
 	public BookingImplementation() {
 		PropertyConfigurator.configure(".\\resources\\log4j.properties");
 		
 	}
+	
+	/*
+	 * Booking Details are added to the bookingdetails table
+	 * 
+	 * Input:- Booking Details
+	 * Output:- Boolean for success or failure
+	 */
 	@Override
 	public int addBooking(BookingDetails bookingDetails) throws SQLException, RoomNotFoundException {
 		logger.info("Booking Details Added");
@@ -33,6 +50,12 @@ public class BookingImplementation implements BookingInterface {
 		
 	}
 
+	/*
+	 * Report of all Booking Details of a selected Hotel
+	 * 
+	 * Input:- Hotel Id
+	 * Output:-  Booking Details
+	 */
 
 	@Override
 	public List<BookingDetails> showBookingByHotelId(String hotelId) throws HotelNotFoundException {
@@ -44,6 +67,12 @@ public class BookingImplementation implements BookingInterface {
 		
 	}
 
+	/*
+	 * Report of all Guests of a selected Hotel
+	 * 
+	 * Input:- Hotel Id
+	 * Output:- Guest List
+	 */
 	@Override
 	public List<User> showGuestList(String hotelId) throws HotelNotFoundException {
 		List<User> userList = bookingDao.showGuestList(hotelId);
@@ -53,6 +82,12 @@ public class BookingImplementation implements BookingInterface {
 			throw new HotelNotFoundException("Hotel with Hotel ID:" +hotelId+" Not Found!");
 	}
 
+	/*
+	 * Report of all Bookings made by the user
+	 * 
+	 * Input:- User ID
+	 * Output:- List of Bookings
+	 */
 	@Override
 	public List<BookingDetails> showMyBookings(String userId) throws UserNotFoundException {
 		List<BookingDetails> bookingDetails = bookingDao.listMyBookings(userId);
@@ -62,6 +97,12 @@ public class BookingImplementation implements BookingInterface {
 			throw new UserNotFoundException("User Not Found!");
 	}
 
+	/*
+	 * Report of all the Bookings on a particular date 
+	 * 
+	 * Input:- Date
+	 * Output:- List of Bookings
+	 */
 	@Override
 	public List<BookingDetails> showAllBookings(String date) {
 		List<BookingDetails> bookedList = bookingDao.getAllBookings();
@@ -91,6 +132,12 @@ public class BookingImplementation implements BookingInterface {
 		return bookingListDatewise;
 	}
 
+	/*
+	 *Gives the total amount of booking
+	 *
+	 *Input:- Booking Details
+	 *Output:- Final Amount
+	 */
 	@Override
 	public double getFinalAmount(BookingDetails bookingDetails) {
 		return bookingDao.bookingAmount(bookingDetails);
