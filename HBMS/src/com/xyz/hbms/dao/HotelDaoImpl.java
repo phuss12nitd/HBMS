@@ -10,6 +10,12 @@ import java.util.List;
 import com.xyz.hbms.db.ConnectionFactory;
 import com.xyz.hbms.model.Hotel;
 
+/*
+ * Hotel DAO implementation
+ * It implements Hotel DAO Interface
+ * It performs Hotel related operations
+ * 
+ */
 public class HotelDaoImpl implements HotelDao{
 
 
@@ -25,7 +31,10 @@ public class HotelDaoImpl implements HotelDao{
 	}
 	
 	
-	
+
+	/*
+	 * Generates a report of all the hotels present in the database
+	 */
 	@Override
 	public List<Hotel> showAll() throws SQLException {
 		List<Hotel> hotelList = new ArrayList<Hotel>();
@@ -57,7 +66,13 @@ public class HotelDaoImpl implements HotelDao{
 		}
 		return hotelList;
 	}
-	
+	/*
+	 * Gives a list of hotels in a particular price range
+	 * 
+	 * Input:- Minimum and Maximum Price
+	 * Output:- List of Hotels
+	 * 
+	 */
 	public List<Hotel> searchByPrice(int min, int max) {
 		List<Hotel> hotelList = new ArrayList<Hotel>();
 		ResultSet rs=null;
@@ -89,6 +104,13 @@ public class HotelDaoImpl implements HotelDao{
 	
 		return hotelList;
 	}
+	/*
+	 *Gives a list of hotels in a particular location
+	 *
+	 *Input:- City name
+	 *Output:- List of Hotels
+	 *
+	 */
 	public List<Hotel> searchByLocation(String city) {
 		List<Hotel> hotelList = new ArrayList<Hotel>();
 		ResultSet rs=null;
@@ -122,6 +144,13 @@ public class HotelDaoImpl implements HotelDao{
 		return hotelList;
 	}
 
+	/*
+	 * Function to change the hotel's description
+	 * 
+	 * Input:- Hotel ID and the description string
+	 * Output:- Boolean for success or failure
+	 * 
+	 */
 	@Override
 	public boolean updateHotelDescription(String hotelId, String hotelDescription) {
 		String SQL = "UPDATE HOTEL SET DESCRIPTION = '" + hotelDescription + "' where hotel_id ='" + hotelId
@@ -141,7 +170,10 @@ public class HotelDaoImpl implements HotelDao{
 		}
 	}
 
-
+	/*
+	 * Private method to get the hotelId using a sequence,
+	 * here a sequence of the name hotSeq is used
+	 */
 	private String getHotelId() {
 		Connection conn = getConnection();
 		String seqqueryString = "SELECT hotSeq.NEXTVAL FROM DUAL";
@@ -161,6 +193,13 @@ public class HotelDaoImpl implements HotelDao{
 	
 	
 	
+	/*
+	 *Registration of a new hotel is done
+	 *
+	 *Input:- Hotel details
+	 *Output:- Boolean for success or failure
+	 *
+	 */
 	@Override
 	public boolean addHotel(Hotel hotel) throws SQLException {
 		Connection conn = getConnection();
@@ -185,7 +224,12 @@ public class HotelDaoImpl implements HotelDao{
 	return false;
 	}
 
-
+	/*
+	 * Removes a hotel from the list with the hotel id entered
+	 * 
+	 * Input:- Hotel ID
+	 * Output:- Boolean for success or failure
+	 */
 	@Override
 	public boolean deleteHotel(String id) throws SQLException {
 		Connection conn = getConnection();
@@ -199,7 +243,13 @@ public class HotelDaoImpl implements HotelDao{
 		return false;
 	}
 
-
+	/*
+	 * Function to include special offers for a hotel
+	 * 
+	 * Input:- Hotel ID and discount percentage
+	 * Output:- Boolean for success or failure
+	 * 
+	 */
 	@Override
 	public boolean updateSpecialOffers(String hotelId, double percentageDiscount) {
 		

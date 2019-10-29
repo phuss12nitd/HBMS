@@ -12,8 +12,17 @@ import com.xyz.hbms.db.ConnectionFactory;
 
 import com.xyz.hbms.model.RoomDetails;
 
+/*
+ * Room DAO implementation
+ * It implements Room DAO Interface
+ * It performs Room related operations
+ * 
+ */
 public class RoomDaoImpl implements RoomDao {
-
+	
+	/*
+	 * private method to get a Connection object
+	 */
 	private Connection getConnection() {
 		Connection connection = null;
 		try {
@@ -24,6 +33,13 @@ public class RoomDaoImpl implements RoomDao {
 		return connection;
 	}
 
+	/*
+	 * Generates a report of all the rooms present in a particular hotel
+	 * 
+	 * Input:- Hotel ID
+	 * Output:- List of Rooms
+	 * 
+	 */
 	@Override
 	public List<RoomDetails> showAll(String HotelId) throws SQLException {
 		List<RoomDetails> roomList = new ArrayList<RoomDetails>();
@@ -51,7 +67,10 @@ public class RoomDaoImpl implements RoomDao {
 		return roomList;
 	}
 
-	
+	/*
+	 * private method to generate a RoomId using a sequence, 
+	 * here a sequence of the name roomSeq is used
+	 */
 	private String getRoomId() {
 		Connection conn = getConnection();
 		String seqqueryString = "SELECT roomSeq.NEXTVAL FROM DUAL";
@@ -71,7 +90,13 @@ public class RoomDaoImpl implements RoomDao {
 	
 	
 	
-	
+	/*
+	 * Registers a new Room in the database
+	 * 
+	 * Input:- Room Details
+	 * Output:- Boolean for success or failure
+	 * 
+	 */
 	@Override
 	public boolean addRoomDetails(RoomDetails roomDetails) {
 		String roomId = getRoomId();
@@ -100,6 +125,13 @@ public class RoomDaoImpl implements RoomDao {
 
 	}
 
+	/*
+	 * Removes the room details from the database of a particular room
+	 * 
+	 * Input:- Room ID
+	 * Output:- Boolean for success or failure
+	 * 
+	 */
 	@Override
 	public boolean deleteRoomDetails(String roomId) {
 		String SQL = "DELETE FROM ROOMDETAILS WHERE ROOM_ID= ?";
@@ -119,7 +151,14 @@ public class RoomDaoImpl implements RoomDao {
 			return true;
 		}
 	}
-
+	
+	/*
+	 * Updates the room tariff of a particular room 
+	 * 
+	 *  Input:- Room ID, Discount Percentage
+	 *  Output:- Boolean for success or failure
+	 *  
+	 */
 	public boolean updateRoomPerNight(String roomId, double roomDiscountPercentage) {
 		String SQL = "UPDATE ROOMDETAILS SET PER_NIGHT_RATE = ? where ROOM_ID = '" + roomId + "'";
 		Connection connection = getConnection();
@@ -141,6 +180,12 @@ public class RoomDaoImpl implements RoomDao {
 		}
 	}
 
+	/*
+	 * This method is used to extract the per night rate of a particular room
+	 * 
+	 * Input :- room ID
+	 * Output :- per night rate in double
+	 */
 	public double getPerNight(String roomId) {
 		String SQL = "SELECT PER_NIGHT_RATE FROM ROOMDETAILS WHERE ROOM_ID = '" + roomId + "'";
 		Connection connection = getConnection();
@@ -160,6 +205,12 @@ public class RoomDaoImpl implements RoomDao {
 		return 0;
 	}
 
+	/*
+	 * Returns the room details of a particular room
+	 * 
+	 * Input:- Room ID
+	 * Output:- Room Details
+	 */
 	@Override
 	public RoomDetails getRoomDetails(String roomId) throws SQLException {
 
@@ -187,6 +238,13 @@ public class RoomDaoImpl implements RoomDao {
 		return roomDetails;
 	}
 
+	/*
+	 * Updates the availability of a particular room
+	 * 
+	 * Input:- Room ID, updated availability
+	 * Output:- Boolean for success or failure
+	 * 
+	 */
 	@Override
 	public int updateAvailability(String roomId, int avail) {
 

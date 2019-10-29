@@ -1,5 +1,11 @@
 package com.xyz.hbms.dao;
 
+/*
+ * Booking DAO implementation
+ * It implements Booking DAO Interface
+ * It performs booking related operations
+ * 
+ */
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -21,8 +27,11 @@ import com.xyz.hbms.service.RoomInterface;
 
 public class BookingDaoImpl implements BookingDao {
 
+	// making an object of RoomImplementation to use it for performing room operations
 	RoomInterface roomImplementation = new RoomImplementation();
 
+	
+	//Function to be used for generating a Connection object
 	private Connection getConnection() {
 		Connection connection = null;
 		try {
@@ -33,6 +42,12 @@ public class BookingDaoImpl implements BookingDao {
 		return connection;
 	}
 
+	/*
+	 *Gives the total amount of booking
+	 *
+	 *Input:- Booking Details
+	 *Output:- Final Amount
+	 */
 	public double bookingAmount(BookingDetails bookingDetails) {
 		Connection conn = getConnection();
 		String amountQuery = "Select Per_Night_Rate from roomdetails where room_id = '" + bookingDetails.getRoomId()
@@ -62,6 +77,11 @@ public class BookingDaoImpl implements BookingDao {
 
 	}
 
+	/*
+	 * Function used to generate a sequence for the booking ID
+	 * Here a sequence is used of the name bookingSequence.
+	 * 
+	 */
 	private int getBookingId() {
 		Connection conn = getConnection();
 		String seqqueryString = "SELECT bookingSequence.NEXTVAL FROM DUAL";
@@ -79,6 +99,12 @@ public class BookingDaoImpl implements BookingDao {
 
 	}
 
+	/*
+	 * Booking Details are added to the bookingdetails table
+	 * 
+	 * Input:- Booking Details
+	 * Output:- int for success or failure
+	 */
 	@Override
 	public int bookRoom(BookingDetails bookingDetails) throws SQLException, RoomNotFoundException {
 		Connection conn = getConnection();
@@ -112,6 +138,12 @@ public class BookingDaoImpl implements BookingDao {
 			return flag;
 	}
 
+	/*
+	 * Report of all Booking Details of a selected Hotel
+	 * 
+	 * Input:- Hotel Id
+	 * Output:-  Booking Details
+	 */
 	@Override
 	public List<BookingDetails> viewBookingByHotelId(String hotelId) {
 		List<BookingDetails> bookedList = new ArrayList<BookingDetails>();
@@ -143,6 +175,12 @@ public class BookingDaoImpl implements BookingDao {
 		return bookedList;
 	}
 
+	/*
+	 * Report of all Guests of a selected Hotel
+	 * 
+	 * Input:- Hotel Id
+	 * Output:- Guest List
+	 */
 	@Override
 	public List<User> showGuestList(String hotelId) {
 		List<User> guestList = new ArrayList<User>();
@@ -168,6 +206,12 @@ public class BookingDaoImpl implements BookingDao {
 		return guestList;
 		}
 
+	/*
+	 * Report of all Bookings made by the user
+	 * 
+	 * Input:- User ID
+	 * Output:- List of Bookings
+	 */
 	@Override
 	public List<BookingDetails> listMyBookings(String userId) {
 		
@@ -200,6 +244,11 @@ public class BookingDaoImpl implements BookingDao {
 		return bookedList;
 	}
 
+	/*
+	 * Report of all Bookings
+	 * 
+	 * Output:- List of Bookings
+	 */
 	@Override
 	public List<BookingDetails> getAllBookings() {
 		List<BookingDetails> bookedList = new ArrayList<BookingDetails>();

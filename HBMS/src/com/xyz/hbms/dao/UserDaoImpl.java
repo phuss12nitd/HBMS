@@ -8,6 +8,13 @@ import java.sql.SQLException;
 import com.xyz.hbms.db.ConnectionFactory;
 import com.xyz.hbms.model.User;
 
+
+/*
+ * User DAO implementation
+ * It implements User DAO Interface
+ * It performs User related operations
+ * 
+ */
 public class UserDaoImpl implements UserDao {
 
 	
@@ -23,7 +30,10 @@ public class UserDaoImpl implements UserDao {
 		}
 		return connection;
 	}
-	
+	/*
+	 * This private method is used to extract the user ID using a sequence,
+	 * here a sequence by the name userSeq is used
+	 */
 	private String getUserId() {
 		Connection conn = getConnection();
 		String seqqueryString = "SELECT userSeq.NEXTVAL FROM DUAL";
@@ -42,7 +52,13 @@ public class UserDaoImpl implements UserDao {
 	}
 	
 	
-	
+	/*
+	 * Registration of a new user is done
+	 * 
+	 * Input:- User Details
+	 * Output:- Boolean for success or failure
+	 * 
+	 */
 	@Override
 	public boolean addUser(User user) {
 		String userId = getUserId();
@@ -72,6 +88,13 @@ public class UserDaoImpl implements UserDao {
 
 
 
+	/*
+	 * Returns the role of a user
+	 * 
+	 * Input:- Username, Password
+	 * Output:- Customer || Employee
+	 * 
+	 */
 	@Override
 	public String getRole(String username, String password) throws SQLException {
 		String SQL = "SELECT USER_ROLE FROM USERS WHERE USER_NAME = ? AND USER_PASSWORD = ?";
@@ -97,6 +120,13 @@ public class UserDaoImpl implements UserDao {
 
 
 
+	/*
+	 * Returns the User ID of a particular user
+	 * 
+	 * Input:- Username, Password
+	 * Output:- User ID
+	 * 
+	 */
 	@Override
 	public String getUserId(String username, String password) throws SQLException {
 		String SQL = "SELECT USER_ID FROM USERS WHERE USER_NAME = ? AND USER_PASSWORD = ?";

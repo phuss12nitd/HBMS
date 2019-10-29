@@ -56,11 +56,11 @@ public class RoomDetails {
 		this.availability = i;
 	}
 
-	public RoomDetails(String hotelId, String roomId, String roomNo, String roomType, double perNight,
+	public RoomDetails(String hotelId, /*String roomId,*/ String roomNo, String roomType, double perNight,
 			int availability) {
 		super();
 		this.hotelId = hotelId;
-		this.roomId = roomId;
+		/*this.roomId = roomId;*/
 		this.roomNo = roomNo;
 		this.roomType = roomType;
 		this.perNight = perNight;
