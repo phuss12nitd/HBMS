@@ -80,8 +80,8 @@ public class RoomDaoImpl implements RoomDao {
 		int result = 0;
 		try {
 			PreparedStatement preparedStatement = conn.prepareStatement(SQL);
-			preparedStatement.setString(1, roomId);
-			preparedStatement.setString(2, roomDetails.getRoomId());
+			preparedStatement.setString(1, roomDetails.getHotelId());
+			preparedStatement.setString(2, roomId);
 			preparedStatement.setString(3, roomDetails.getRoomNo());
 			preparedStatement.setString(4, roomDetails.getRoomType());
 			preparedStatement.setDouble(5, roomDetails.getPerNight());
